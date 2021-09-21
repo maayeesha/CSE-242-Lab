@@ -1,10 +1,9 @@
 //Maayeesha Farzana
 //ID: 1804069
+// Detect cycle using BFS
 
 #include<bits/stdc++.h>
 using namespace std;
-
-vector<bool> vis(100,false);
 
 void edge(vector<int> li[],int x,int y){
     li[x].push_back(y);
@@ -12,15 +11,11 @@ void edge(vector<int> li[],int x,int y){
 }
 
 
-bool BFScycle(vector<int> li[],int n)
+bool BFScycle(vector<int> li[],int i,int n,vector<bool>& vis)
 {
-    int i;
     vector<int> p(n,-1);
     queue<int> q;
-    for(i=0; i<n; i++)
-    {
-        if(vis[i]==false)
-        {
+
             vis[i] = true;
             q.push(i);
 
@@ -29,19 +24,27 @@ bool BFScycle(vector<int> li[],int n)
                 int u = q.front();
                 q.pop();
 
-                for(int j=0; j != li[i].size(); j++)
+                for (auto it: li[u])
                 {
-                    if(vis[j] == false)
+                    if(vis[it] == false)
                     {
-                        vis[j] = true;
-                        q.push(j);
-                        p[j] = u;
+                        vis[it] = true;
+                        q.push(it);
+                        p[it] = u;
                     }
-                    else if(p[u] != j) return true;
+                    else if(p[u] != it) return true;
                 }
             }
+            return false;
         }
-    }
+
+bool isCycle(vector<int> li[],int n)
+{
+    vector<bool> vis(n,false);
+    for (int i=0; i<n; i++)
+        if (vis[i] == false && BFScycle(li, i,
+                                         n,vis))
+            return true;
     return false;
 }
 
@@ -60,6 +63,6 @@ int main()
         cin>>x>>y;
         edge(li,x,y);
     }
-    if(BFScycle(li,n)) cout<<"Cycle found"<<endl;
+    if(isCycle(li,n)) cout<<"Cycle found"<<endl;
     else cout<<"No cycle found"<<endl;
 }
